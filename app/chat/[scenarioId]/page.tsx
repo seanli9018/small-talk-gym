@@ -2,6 +2,7 @@ import { getScenario } from "@/lib/scenarios";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ChatWindow from "@/components/ChatWindow";
+import { ArrowLeft } from "lucide-react";
 
 export default async function ChatPage({
   params,
@@ -19,9 +20,9 @@ export default async function ChatPage({
         <div className="flex items-center gap-3 mb-5">
           <Link
             href="/"
-            className="text-indigo-400 hover:text-indigo-600 text-sm transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-indigo-600 transition-colors"
           >
-            ← Back
+            <ArrowLeft className="h-4 w-4" />Back
           </Link>
           <span className="text-gray-300">|</span>
           <span className="text-2xl">{scenario.emoji}</span>
