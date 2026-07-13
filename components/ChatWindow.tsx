@@ -5,6 +5,7 @@ import { Scenario, Message, ChatResponse } from "@/types";
 import MessageBubble from "./MessageBubble";
 import ScoreDisplay from "./ScoreDisplay";
 import PersonaReveal from "./PersonaReveal";
+import ConversationSummary from "./ConversationSummary";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,9 +20,11 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lastResponse, setLastResponse] = useState<ChatResponse | null>(null);
+  const [scoreHistory, setScoreHistory] = useState<ChatResponse[]>([]);
   const [bonusUnlocked, setBonusUnlocked] = useState(false);
   const [bonusMessage, setBonusMessage] = useState<string | null>(null);
+  const [conversationEnded, setConversationEnded] = useState(false);
+  const [finalSummary, setFinalSummary] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   }, [messages, loading]);
 
   const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || conversationEnded) return;
 
     const userMessage: Message = { role: "user", content: input.trim() };
     const updatedMessages = [...messages, userMessage];
@@ -46,11 +49,16 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
       });
 
       const data: ChatResponse = await res.json();
-      setLastResponse(data);
+      setScoreHistory((prev) => [...prev, data]);
 
       if (data.triggerActivated && !bonusUnlocked) {
         setBonusUnlocked(true);
         setBonusMessage(data.bonusMessage);
+      }
+
+      if (data.conversationEnded && data.finalSummary) {
+        setConversationEnded(true);
+        setFinalSummary(data.finalSummary);
       }
 
       setMessages((prev) => [
@@ -87,34 +95,58 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
       </Card>
 
       {/* Score & Feedback */}
-      {lastResponse?.score != null && (
-        <ScoreDisplay score={lastResponse.score} feedback={lastResponse.feedback} />
-      )}
+      {scoreHistory.length > 0 && (() => {
+        const latest = scoreHistory[scoreHistory.length - 1];
+        const previous = scoreHistory.length > 1 ? scoreHistory[scoreHistory.length - 2] : null;
+        return latest.overallScore != null ? (
+          <ScoreDisplay
+            key={scoreHistory.length}
+            scores={latest.scores}
+            overallScore={latest.overallScore}
+            previousScores={previous?.scores ?? null}
+            previousOverallScore={previous?.overallScore ?? null}
+            feedback={latest.feedback}
+            coachingTip={latest.coachingTip}
+            overallHistory={scoreHistory.map((r) => r.overallScore).filter((s): s is number => s != null)}
+          />
+        ) : null;
+      })()}
 
       {/* Bonus Persona Reveal */}
       {bonusUnlocked && bonusMessage && (
         <PersonaReveal message={bonusMessage} personaName={scenario.personaName} />
       )}
 
-      {/* Input */}
-      <div className="flex gap-2">
-        <Input
-          placeholder="Say something…"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          disabled={loading}
-          className="flex-1"
+      {/* Final Summary */}
+      {conversationEnded && finalSummary && (
+        <ConversationSummary
+          scoreHistory={scoreHistory}
+          finalSummary={finalSummary}
+          personaName={scenario.personaName}
         />
-        <Button
-          onClick={sendMessage}
-          disabled={loading || !input.trim()}
-          size="icon"
-          className="bg-indigo-600 hover:bg-indigo-700"
-        >
-          <SendHorizonal className="h-4 w-4" />
-        </Button>
-      </div>
+      )}
+
+      {/* Input — hidden once conversation ends */}
+      {!conversationEnded && (
+        <div className="flex gap-2">
+          <Input
+            placeholder="Say something…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            disabled={loading}
+            className="flex-1"
+          />
+          <Button
+            onClick={sendMessage}
+            disabled={loading || !input.trim()}
+            size="icon"
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            <SendHorizonal className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

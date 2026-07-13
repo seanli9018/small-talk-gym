@@ -7,12 +7,23 @@ import { Message } from "@/types";
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
+const ScoreBreakdownSchema = z.object({
+  naturalness: z.number().min(1).max(10),
+  engagement: z.number().min(1).max(10),
+  warmth: z.number().min(1).max(10),
+  originality: z.number().min(1).max(10),
+});
+
 const ChatResponseSchema = z.object({
   reply: z.string(),
-  score: z.number().min(1).max(10).nullable(),
+  scores: ScoreBreakdownSchema.nullable(),
+  overallScore: z.number().min(1).max(10).nullable(),
   feedback: z.string().nullable(),
+  coachingTip: z.string().nullable(),
   triggerActivated: z.boolean(),
   bonusMessage: z.string().nullable(),
+  conversationEnded: z.boolean(),
+  finalSummary: z.string().nullable(),
 });
 
 export async function POST(req: NextRequest) {

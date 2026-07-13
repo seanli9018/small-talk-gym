@@ -18,10 +18,21 @@ export interface Message {
   content: string;
 }
 
+export interface ScoreBreakdown {
+  naturalness: number;   // Sounds like real, fluid human speech (1–10)
+  engagement: number;    // Invites the other person to continue (1–10)
+  warmth: number;        // Friendly, emotionally positive tone (1–10)
+  originality: number;   // Avoids clichés, adds personality (1–10)
+}
+
 export interface ChatResponse {
   reply: string;
-  score: number | null;
+  scores: ScoreBreakdown | null;
+  overallScore: number | null;
   feedback: string | null;
+  coachingTip: string | null;
   triggerActivated: boolean;
   bonusMessage: string | null;
+  conversationEnded: boolean;
+  finalSummary: string | null;
 }
