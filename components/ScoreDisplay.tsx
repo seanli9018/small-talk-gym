@@ -75,7 +75,7 @@ export default function ScoreDisplay({
         {/* Overall score header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Score
             </span>
             <Sparkline history={overallHistory} />
@@ -119,9 +119,9 @@ export default function ScoreDisplay({
 
         {/* Coaching tip */}
         {coachingTip && (
-          <div className="flex items-start gap-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg px-3 py-2">
-            <Lightbulb className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
-            <p className="text-xs text-indigo-700 dark:text-indigo-300">{coachingTip}</p>
+          <div className="flex items-start gap-2 bg-muted rounded-lg px-3 py-2 border">
+            <Lightbulb className="h-4 w-4 text-foreground mt-0.5 shrink-0" />
+            <p className="text-xs text-muted-foreground">{coachingTip}</p>
           </div>
         )}
       </CardContent>

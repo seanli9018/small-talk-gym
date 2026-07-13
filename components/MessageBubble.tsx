@@ -18,7 +18,7 @@ export default function MessageBubble({
     <AiMessage from={message.role}>
       <MessageContent>
         {!isUser && (
-          <p className="text-xs font-semibold text-indigo-500 mb-1">{personaName}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{personaName}</p>
         )}
         <MessageResponse>{message.content}</MessageResponse>
       </MessageContent>

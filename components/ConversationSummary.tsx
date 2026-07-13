@@ -89,18 +89,19 @@ export default function ConversationSummary({
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <Card className="border-2 border-indigo-200 dark:border-indigo-800 shadow-lg">
+      <Card className="border shadow-sm">
         <CardContent className="px-5 py-5 flex flex-col gap-5">
 
           {/* Header */}
-          <div className="flex flex-col items-center gap-1 text-center">
-            <Trophy className="h-8 w-8 text-indigo-500" />
-            <h2 className="text-lg font-bold">Conversation Complete</h2>
+          <div className="flex flex-col items-center gap-1 text-center border-b pb-4">
+            <Trophy className="h-7 w-7 text-foreground mb-1" />
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Session Complete</p>
+            <h2 className="text-lg font-bold">Conversation Summary</h2>
             {avgOverall != null && (
-              <p className={cn("text-3xl font-extrabold", scoreColor(avgOverall))}>
+              <p className={cn("text-4xl font-extrabold mt-1", scoreColor(avgOverall))}>
                 {avgOverall}
-                <span className="text-base font-normal text-muted-foreground">/10</span>
-                <span className="ml-2 text-base font-semibold">{overallLabel(avgOverall)}</span>
+                <span className="text-lg font-normal text-muted-foreground">/10</span>
+                <span className="ml-2 text-base font-semibold text-foreground">{overallLabel(avgOverall)}</span>
               </p>
             )}
           </div>
@@ -155,7 +156,7 @@ export default function ConversationSummary({
           )}
 
           {/* Final summary from persona */}
-          <div className="bg-muted/50 rounded-lg px-4 py-3 text-sm text-muted-foreground italic border-l-4 border-indigo-400">
+          <div className="bg-muted/60 rounded-lg px-4 py-3 text-sm text-muted-foreground border-l-2 border-foreground/20 italic">
             <span className="font-semibold not-italic text-foreground">{personaName}:</span>{" "}
             {finalSummary}
           </div>
@@ -163,7 +164,7 @@ export default function ConversationSummary({
           {/* Actions */}
           <Button
             onClick={() => router.refresh()}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
+            className="w-full gap-2"
           >
             <RotateCcw className="h-4 w-4" />
             Try Again
