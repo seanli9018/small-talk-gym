@@ -25,10 +25,17 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   const [conversationEnded, setConversationEnded] = useState(false);
   const [finalSummary, setFinalSummary] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (!loading && !conversationEnded) {
+      inputRef.current?.focus();
+    }
+  }, [loading, conversationEnded]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading || conversationEnded) return;
@@ -111,6 +118,7 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
                 previousScores={previous?.scores ?? null}
                 previousOverallScore={previous?.overallScore ?? null}
                 feedback={latest.feedback}
+                skillHighlight={latest.skillHighlight}
                 coachingTip={latest.coachingTip}
                 overallHistory={scoreHistory.map((r) => r.overallScore).filter((s): s is number => s != null)}
               />
@@ -136,9 +144,10 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
 
       {/* Sticky input bar */}
       {!conversationEnded && (
-        <div className="shrink-0 border-t bg-background px-4 py-3">
-          <div className="max-w-2xl mx-auto flex gap-2">
+        <div className="shrink-0 border-t bg-background px-4 h-16 flex items-center">
+          <div className="max-w-2xl mx-auto flex gap-2 w-full">
             <Input
+              ref={inputRef}
               placeholder="Say something…"
               value={input}
               onChange={(e) => setInput(e.target.value)}

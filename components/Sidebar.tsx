@@ -90,7 +90,7 @@ function SidebarContent({
       </nav>
 
       {/* Footer hint */}
-      <div className="mt-auto px-4 py-4 border-t flex items-center justify-between gap-2">
+      <div className="mt-auto px-4 h-16 border-t flex items-center justify-between gap-2">
         <p className="text-[11px] text-muted-foreground leading-relaxed">
           Each scenario hides a secret — can you unlock them all?
         </p>

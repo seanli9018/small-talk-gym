@@ -19,10 +19,12 @@ export interface Message {
 }
 
 export interface ScoreBreakdown {
-  naturalness: number;   // Sounds like real, fluid human speech (1–10)
-  engagement: number;    // Invites the other person to continue (1–10)
-  warmth: number;        // Friendly, emotionally positive tone (1–10)
-  originality: number;   // Avoids clichés, adds personality (1–10)
+  naturalness: number;      // Sounds like real, fluid human speech (1–10)
+  engagement: number;       // Invites the other person to continue (1–10)
+  warmth: number;           // Friendly, emotionally positive tone (1–10)
+  originality: number;      // Avoids clichés, adds personality (1–10)
+  activeListening: number;  // References or builds on what the persona said (1–10)
+  questionQuality: number;  // Asks open-ended, thoughtful follow-up questions (1–10)
 }
 
 export interface ChatResponse {
@@ -30,6 +32,7 @@ export interface ChatResponse {
   scores: ScoreBreakdown | null;
   overallScore: number | null;
   feedback: string | null;
+  skillHighlight: string | null;
   coachingTip: string | null;
   triggerActivated: boolean;
   bonusMessage: string | null;

@@ -1,13 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ScoreBreakdown } from "@/types";
-import { Lightbulb, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Lightbulb, Star, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const DIMENSIONS: { key: keyof ScoreBreakdown; label: string }[] = [
-  { key: "naturalness", label: "Naturalness" },
-  { key: "engagement",  label: "Engagement"  },
-  { key: "warmth",      label: "Warmth"      },
-  { key: "originality", label: "Originality" },
+  { key: "naturalness",     label: "Naturalness"      },
+  { key: "engagement",      label: "Engagement"       },
+  { key: "warmth",          label: "Warmth"           },
+  { key: "originality",     label: "Originality"      },
+  { key: "activeListening", label: "Active Listening" },
+  { key: "questionQuality", label: "Question Quality" },
 ];
 
 function scoreColor(score: number) {
@@ -56,6 +58,7 @@ export default function ScoreDisplay({
   previousScores,
   previousOverallScore,
   feedback,
+  skillHighlight,
   coachingTip,
   overallHistory,
 }: {
@@ -64,6 +67,7 @@ export default function ScoreDisplay({
   previousScores: ScoreBreakdown | null;
   previousOverallScore: number | null;
   feedback: string | null;
+  skillHighlight: string | null;
   coachingTip: string | null;
   overallHistory: number[];
 }) {
@@ -115,6 +119,14 @@ export default function ScoreDisplay({
         {/* Feedback */}
         {feedback && (
           <p className="text-sm text-muted-foreground border-t pt-2">{feedback}</p>
+        )}
+
+        {/* Skill highlight (positive reinforcement) */}
+        {skillHighlight && (
+          <div className="flex items-start gap-2 bg-green-50 dark:bg-green-950/30 rounded-lg px-3 py-2 border border-green-200 dark:border-green-800">
+            <Star className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-green-700 dark:text-green-400">{skillHighlight}</p>
+          </div>
         )}
 
         {/* Coaching tip */}

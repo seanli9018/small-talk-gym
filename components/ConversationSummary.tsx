@@ -8,10 +8,12 @@ import { ScoreBreakdown, ChatResponse } from "@/types";
 import { Trophy, RotateCcw, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const DIMENSIONS: { key: keyof ScoreBreakdown; label: string; emoji: string }[] = [
-  { key: "naturalness", label: "Naturalness", emoji: "💬" },
-  { key: "engagement",  label: "Engagement",  emoji: "🔗" },
-  { key: "warmth",      label: "Warmth",      emoji: "☀️" },
-  { key: "originality", label: "Originality", emoji: "✨" },
+  { key: "naturalness",     label: "Naturalness",      emoji: "💬" },
+  { key: "engagement",      label: "Engagement",       emoji: "🔗" },
+  { key: "warmth",          label: "Warmth",           emoji: "☀️" },
+  { key: "originality",     label: "Originality",      emoji: "✨" },
+  { key: "activeListening", label: "Active Listening", emoji: "👂" },
+  { key: "questionQuality", label: "Question Quality", emoji: "❓" },
 ];
 
 function scoreColor(score: number) {
@@ -46,19 +48,23 @@ function averageBreakdown(history: ChatResponse[]): ScoreBreakdown | null {
   if (scored.length === 0) return null;
   const sum = scored.reduce(
     (acc, r) => ({
-      naturalness: acc.naturalness + r.scores!.naturalness,
-      engagement:  acc.engagement  + r.scores!.engagement,
-      warmth:      acc.warmth      + r.scores!.warmth,
-      originality: acc.originality + r.scores!.originality,
+      naturalness:     acc.naturalness     + r.scores!.naturalness,
+      engagement:      acc.engagement      + r.scores!.engagement,
+      warmth:          acc.warmth          + r.scores!.warmth,
+      originality:     acc.originality     + r.scores!.originality,
+      activeListening: acc.activeListening + r.scores!.activeListening,
+      questionQuality: acc.questionQuality + r.scores!.questionQuality,
     }),
-    { naturalness: 0, engagement: 0, warmth: 0, originality: 0 }
+    { naturalness: 0, engagement: 0, warmth: 0, originality: 0, activeListening: 0, questionQuality: 0 }
   );
   const n = scored.length;
   return {
-    naturalness: Math.round(sum.naturalness / n),
-    engagement:  Math.round(sum.engagement  / n),
-    warmth:      Math.round(sum.warmth      / n),
-    originality: Math.round(sum.originality / n),
+    naturalness:     Math.round(sum.naturalness     / n),
+    engagement:      Math.round(sum.engagement      / n),
+    warmth:          Math.round(sum.warmth          / n),
+    originality:     Math.round(sum.originality     / n),
+    activeListening: Math.round(sum.activeListening / n),
+    questionQuality: Math.round(sum.questionQuality / n),
   };
 }
 

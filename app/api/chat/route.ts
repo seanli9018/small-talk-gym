@@ -12,6 +12,8 @@ const ScoreBreakdownSchema = z.object({
   engagement: z.number().min(1).max(10),
   warmth: z.number().min(1).max(10),
   originality: z.number().min(1).max(10),
+  activeListening: z.number().min(1).max(10),
+  questionQuality: z.number().min(1).max(10),
 });
 
 const ChatResponseSchema = z.object({
@@ -19,6 +21,7 @@ const ChatResponseSchema = z.object({
   scores: ScoreBreakdownSchema.nullable(),
   overallScore: z.number().min(1).max(10).nullable(),
   feedback: z.string().nullable(),
+  skillHighlight: z.string().nullable(),
   coachingTip: z.string().nullable(),
   triggerActivated: z.boolean(),
   bonusMessage: z.string().nullable(),
