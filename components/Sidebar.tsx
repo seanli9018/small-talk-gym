@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { scenarios } from "@/lib/scenarios";
 import { cn } from "@/lib/utils";
-import { Dumbbell, Sun, Moon, Menu, X } from "lucide-react";
+import { X } from "lucide-react";
 
 const difficultyDot: Record<string, string> = {
   beginner: "bg-foreground/30",
@@ -22,19 +21,14 @@ function SidebarContent({
   onClose?: () => void;
 }) {
   const pathname = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   return (
     <>
-      {/* Brand */}
-      <div className="flex items-center gap-2.5 px-4 py-4 border-b">
-        <Dumbbell className="h-5 w-5 text-foreground shrink-0" />
-        <span className="font-semibold text-sm tracking-tight text-foreground flex-1">
-          Small Talk Gym
-        </span>
-        {onClose && (
+      {/* Mobile close button (only shown inside the mobile drawer) */}
+      {onClose && (
+        <div className="flex items-center justify-end px-3 py-2 border-b">
           <button
             onClick={onClose}
             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -42,8 +36,8 @@ function SidebarContent({
           >
             <X className="h-4 w-4" />
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Section label */}
       <div className="px-4 pt-5 pb-2">
@@ -90,58 +84,34 @@ function SidebarContent({
       </nav>
 
       {/* Footer hint */}
-      <div className="mt-auto px-4 h-16 border-t flex items-center justify-between gap-2">
+      <div className="mt-auto px-4 h-16 border-t flex items-center">
         <p className="text-[11px] text-muted-foreground leading-relaxed">
           Each scenario hides a secret — can you unlock them all?
         </p>
-        <button
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          className="shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Toggle dark mode"
-        >
-          {mounted && resolvedTheme === "dark" ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
-        </button>
       </div>
     </>
   );
 }
 
-export default function Sidebar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
+export default function Sidebar({
+  mobileOpen,
+  onMobileOpenChange,
+}: {
+  mobileOpen: boolean;
+  onMobileOpenChange: (open: boolean) => void;
+}) {
   return (
     <>
       {/* Desktop sidebar — always visible on md+ */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 h-screen border-r bg-muted/30 overflow-y-auto">
+      <aside className="hidden md:flex flex-col w-64 shrink-0 h-full border-r bg-muted/30 overflow-y-auto">
         <SidebarContent />
       </aside>
-
-      {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 h-14 border-b bg-background/95 backdrop-blur-sm">
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Dumbbell className="h-4 w-4 text-foreground shrink-0" />
-          <span className="font-semibold text-sm tracking-tight text-foreground">
-            Small Talk Gym
-          </span>
-        </div>
-      </div>
 
       {/* Mobile drawer backdrop */}
       {mobileOpen && (
         <div
           className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-          onClick={() => setMobileOpen(false)}
+          onClick={() => onMobileOpenChange(false)}
         />
       )}
 
@@ -152,7 +122,7 @@ export default function Sidebar() {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <SidebarContent onNavClick={() => setMobileOpen(false)} onClose={() => setMobileOpen(false)} />
+        <SidebarContent onNavClick={() => onMobileOpenChange(false)} onClose={() => onMobileOpenChange(false)} />
       </aside>
     </>
   );
