@@ -9,7 +9,7 @@ export interface Scenario {
   personaName: string;
   personaDescription: string;
   systemPrompt: string;
-  hiddenTriggerKeywords: string[];
+  hiddenTriggerTheme: string;
   hiddenPersonaReveal: string;
 }
 

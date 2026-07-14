@@ -6,6 +6,7 @@ import MessageBubble from "./MessageBubble";
 import ScoreDisplay from "./ScoreDisplay";
 import PersonaReveal from "./PersonaReveal";
 import ConversationSummary from "./ConversationSummary";
+import AchievementPopup from "./AchievementPopup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SendHorizonal } from "lucide-react";
@@ -22,6 +23,8 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   const [scoreHistory, setScoreHistory] = useState<ChatResponse[]>([]);
   const [bonusUnlocked, setBonusUnlocked] = useState(false);
   const [bonusMessage, setBonusMessage] = useState<string | null>(null);
+  const [showAchievement, setShowAchievement] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
   const [conversationEnded, setConversationEnded] = useState(false);
   const [finalSummary, setFinalSummary] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -60,6 +63,12 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
       if (data.triggerActivated && !bonusUnlocked) {
         setBonusUnlocked(true);
         setBonusMessage(data.bonusMessage);
+        // Flash the screen then show the achievement popup
+        setShowFlash(true);
+        setTimeout(() => {
+          setShowFlash(false);
+          setShowAchievement(true);
+        }, 600);
       }
 
       if (data.conversationEnded && data.finalSummary) {
@@ -83,6 +92,24 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
+
+      {/* ── Screen flash on trigger ── */}
+      {showFlash && (
+        <div
+          className="animate-flash-overlay fixed inset-0 z-40 pointer-events-none bg-yellow-300"
+          aria-hidden
+        />
+      )}
+
+      {/* ── Achievement popup ── */}
+      {showAchievement && bonusMessage && (
+        <AchievementPopup
+          personaName={scenario.personaName}
+          message={bonusMessage}
+          onDismiss={() => setShowAchievement(false)}
+        />
+      )}
+
       {/* Scrollable message area */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-4">

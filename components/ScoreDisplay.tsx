@@ -74,7 +74,7 @@ export default function ScoreDisplay({
   if (!scores || overallScore == null) return null;
 
   return (
-    <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <Card className="animate-score-pop">
       <CardContent className="px-4 py-3 flex flex-col gap-3">
         {/* Overall score header */}
         <div className="flex items-center justify-between">

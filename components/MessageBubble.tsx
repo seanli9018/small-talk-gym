@@ -15,13 +15,15 @@ export default function MessageBubble({
   const isUser = message.role === "user";
 
   return (
-    <AiMessage from={message.role}>
-      <MessageContent>
-        {!isUser && (
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{personaName}</p>
-        )}
-        <MessageResponse>{message.content}</MessageResponse>
-      </MessageContent>
-    </AiMessage>
+    <div className={isUser ? "animate-msg-in-right" : "animate-msg-in-left"}>
+      <AiMessage from={message.role}>
+        <MessageContent>
+          {!isUser && (
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{personaName}</p>
+          )}
+          <MessageResponse>{message.content}</MessageResponse>
+        </MessageContent>
+      </AiMessage>
+    </div>
   );
 }
