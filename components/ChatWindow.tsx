@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Scenario, Message, ChatResponse } from "@/types";
 import MessageBubble from "./MessageBubble";
 import ScoreDisplay from "./ScoreDisplay";
@@ -9,7 +9,17 @@ import ConversationSummary from "./ConversationSummary";
 import AchievementPopup from "./AchievementPopup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizonal } from "lucide-react";
+import { SendHorizonal, Mic, MicOff } from "lucide-react";
+
+// Extend Window to include webkit-prefixed SpeechRecognition
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SpeechRecognition: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    webkitSpeechRecognition: any;
+  }
+}
 
 export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   const [messages, setMessages] = useState<Message[]>([
@@ -29,6 +39,41 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
   const [finalSummary, setFinalSummary] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+
+  useEffect(() => {
+    setSpeechSupported(
+      typeof window !== "undefined" &&
+        ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+    );
+  }, []);
+
+  const toggleListening = useCallback(() => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SR();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (e: { results: { [x: string]: { [x: string]: { transcript: string; }; }; }; }) => {
+      const transcript = e.results[0][0].transcript;
+      setInput((prev) => (prev ? prev + " " + transcript : transcript));
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+  }, [isListening]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -175,13 +220,28 @@ export default function ChatWindow({ scenario }: { scenario: Scenario }) {
           <div className="max-w-2xl mx-auto flex gap-2 w-full">
             <Input
               ref={inputRef}
-              placeholder="Say something…"
+              placeholder={isListening ? "Listening…" : "Say something…"}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               disabled={loading}
               className="flex-1"
             />
+            {speechSupported && (
+              <Button
+                onClick={toggleListening}
+                disabled={loading || conversationEnded}
+                size="icon"
+                variant={isListening ? "destructive" : "outline"}
+                title={isListening ? "Stop recording" : "Speak your message"}
+              >
+                {isListening ? (
+                  <MicOff className="h-4 w-4 animate-pulse" />
+                ) : (
+                  <Mic className="h-4 w-4" />
+                )}
+              </Button>
+            )}
             <Button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
