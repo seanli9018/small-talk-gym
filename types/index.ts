@@ -11,6 +11,8 @@ export interface Scenario {
   systemPrompt: string;
   hiddenTriggerTheme: string;
   hiddenPersonaReveal: string;
+  /** If true, the user must be signed in to access this scenario. */
+  requiresAuth?: boolean;
 }
 
 export interface Message {

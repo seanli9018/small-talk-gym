@@ -1,6 +1,8 @@
 import { getScenario } from "@/lib/scenarios";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ChatWindow from "@/components/ChatWindow";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export default async function ChatPage({
   params,
@@ -10,6 +12,13 @@ export default async function ChatPage({
   const { scenarioId } = await params;
   const scenario = getScenario(scenarioId);
   if (!scenario) notFound();
+
+  if (scenario.requiresAuth) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      redirect(`/sign-in?callbackURL=/chat/${scenarioId}`);
+    }
+  }
 
   return (
     <div className="flex flex-col h-screen">

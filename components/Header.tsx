@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Dumbbell, Sun, Moon, Mail, Menu } from "lucide-react";
+import { Dumbbell, Sun, Moon, Mail, Menu, LogIn, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession, signOut } from "@/lib/auth-client";
 
 export default function Header({
   onMenuClick,
@@ -13,9 +14,11 @@ export default function Header({
   onMenuClick?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const { data: session } = useSession();
 
   return (
     <header className="h-14 shrink-0 border-b bg-background/95 backdrop-blur-sm flex items-center px-4 gap-4 z-30">
@@ -55,9 +58,40 @@ export default function Header({
         </Link>
 
         {/* Placeholder slots for future nav items (login, settings, etc.) */}
-        {/* <UserButton /> */}
         {/* <SettingsButton /> */}
       </nav>
+
+      {/* Auth */}
+      {mounted && (
+        session ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-sm text-muted-foreground">
+              <User className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline max-w-[120px] truncate">{session.user.name || session.user.email}</span>
+            </div>
+            <button
+              onClick={async () => {
+                await signOut();
+                router.push("/sign-in");
+                router.refresh();
+              }}
+              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/sign-in"
+            className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            <span>Sign in</span>
+          </Link>
+        )
+      )}
 
       {/* Theme toggle */}
       <button

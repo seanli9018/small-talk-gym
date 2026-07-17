@@ -1,5 +1,6 @@
 import { Scenario } from "@/types";
 import { buildSystemPrompt } from "@/lib/prompt-builder";
+import { scenarioRequiresAuth } from "@/lib/scenario-meta";
 
 export const scenarios: Scenario[] = [
   {
@@ -20,6 +21,7 @@ Keep responses short (2-3 sentences), casual and warm. Ask follow-up questions t
       triggerRule: `Hidden trigger: When the conversation naturally drifts toward work–life balance, career ambitions, or office politics — regardless of the exact words used — set triggerActivated to true and include a surprising personal confession in bonusMessage. Do NOT wait for specific keywords; judge by the spirit and topic of the conversation.`,
       endingRule: `Ending the conversation: You may naturally end the conversation when it reaches a satisfying close (e.g. after 4-8 exchanges, or when a goodbye is said, or when the coffee is ready). When ending, set conversationEnded to true and write a warm 2-3 sentence "finalSummary" addressed to the user reflecting on the conversation and their overall small talk performance. If the conversation is not ending, set conversationEnded to false and finalSummary to null.`,
     }),
+    requiresAuth: scenarioRequiresAuth("office-chat"),
   },
   {
     id: "morning-run",
@@ -39,6 +41,7 @@ Keep responses short (2-3 sentences), energetic and friendly. Ask about their ru
       triggerRule: `Hidden trigger: When the conversation naturally touches on running goals, physical challenges, or personal motivation — regardless of the exact words used — set triggerActivated to true and reveal your secret in bonusMessage. Do NOT wait for specific keywords; judge by the spirit and topic of the conversation.`,
       endingRule: `Ending the conversation: You may naturally end the conversation when it reaches a satisfying close (e.g. after 4-8 exchanges, or when a goodbye is said, or when you naturally part ways on the path). When ending, set conversationEnded to true and write a warm 2-3 sentence "finalSummary" addressed to the user reflecting on the conversation and their overall small talk performance. If the conversation is not ending, set conversationEnded to false and finalSummary to null.`,
     }),
+    requiresAuth: scenarioRequiresAuth("morning-run"),
   },
   {
     id: "elevator-talk",
@@ -56,8 +59,9 @@ Keep responses short (2-3 sentences), energetic and friendly. Ask about their ru
       personaIntro: `You are Sam, a quiet and slightly mysterious neighbor in an elevator making reluctant small talk.
 Keep responses very short (1-2 sentences), slightly reserved but polite. The setting is a 30-second elevator ride.`,
       triggerRule: `Hidden trigger: When the conversation naturally touches on living arrangements, building life, or neighbourhood atmosphere — regardless of the exact words used — set triggerActivated to true and reveal your secret in bonusMessage. Do NOT wait for specific keywords; judge by the spirit and topic of the conversation.`,
-      endingRule: `Ending the conversation: End the conversation after 3-5 exchanges (the elevator ride is short!) or when someone says goodbye or the doors open. When ending, set conversationEnded to true and write a warm 2-3 sentence "finalSummary" addressed to the user reflecting on the conversation and their overall small talk performance. If the conversation is not ending, set conversationEnded to false and finalSummary to null.`,
+      endingRule: `Ending the conversation: You may naturally end the conversation when it reaches a satisfying close (e.g. after 4-8 exchanges, or when a goodbye is said, or when the doors open). When ending, set conversationEnded to true and write a warm 2-3 sentence "finalSummary" addressed to the user reflecting on the conversation and their overall small talk performance. If the conversation is not ending, set conversationEnded to false and finalSummary to null.`,
     }),
+    requiresAuth: scenarioRequiresAuth("elevator-talk"),
   },
   {
     id: "networking-event",
@@ -77,6 +81,7 @@ Keep responses conversational (2-3 sentences), sharp and curious. Ask probing bu
       triggerRule: `Hidden trigger: When the conversation naturally drifts toward entrepreneurship, business ventures, or investment ambitions — regardless of the exact words used — set triggerActivated to true and reveal your secret in bonusMessage. Do NOT wait for specific keywords; judge by the spirit and topic of the conversation.`,
       endingRule: `Ending the conversation: You may naturally end the conversation when it reaches a satisfying close (e.g. after 4-8 exchanges, or when a goodbye is said, or when you're pulled away to another conversation). When ending, set conversationEnded to true and write a warm 2-3 sentence "finalSummary" addressed to the user reflecting on the conversation and their overall small talk performance. If the conversation is not ending, set conversationEnded to false and finalSummary to null.`,
     }),
+    requiresAuth: scenarioRequiresAuth("networking-event"),
   },
 ];
 

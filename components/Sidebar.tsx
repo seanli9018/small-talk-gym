@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { scenarios } from "@/lib/scenarios";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { X, Lock } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 
 const difficultyDot: Record<string, string> = {
   beginner: "bg-foreground/30",
@@ -21,8 +22,11 @@ function SidebarContent({
   onClose?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const { data: session } = useSession();
+  const isSignedIn = !!session?.user;
 
   return (
     <>
@@ -50,6 +54,51 @@ function SidebarContent({
       <nav className="flex flex-col gap-0.5 px-2 pb-4">
         {scenarios.map((scenario) => {
           const active = pathname === `/chat/${scenario.id}`;
+          const locked = !!scenario.requiresAuth && !isSignedIn;
+
+          const content = (
+            <>
+              <span className="text-base leading-none shrink-0">{scenario.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <p className={cn("font-medium truncate leading-tight", active ? "text-background" : locked ? "text-muted-foreground" : "text-foreground")}>
+                  {scenario.name}
+                </p>
+                <p className={cn("text-[11px] truncate mt-0.5", active ? "text-background/70" : "text-muted-foreground")}>
+                  {scenario.personaName}
+                </p>
+              </div>
+              {locked ? (
+                <Lock className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+              ) : (
+                <span
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full shrink-0",
+                    active ? "bg-background/60" : difficultyDot[scenario.difficulty]
+                  )}
+                  title={scenario.difficulty}
+                />
+              )}
+            </>
+          );
+
+          if (locked) {
+            return (
+              <button
+                key={scenario.id}
+                onClick={() => {
+                  onNavClick?.();
+                  router.push(`/sign-in?callbackURL=/chat/${scenario.id}`);
+                }}
+                className={cn(
+                  "group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors w-full text-left",
+                  "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {content}
+              </button>
+            );
+          }
+
           return (
             <Link
               key={scenario.id}
@@ -62,22 +111,7 @@ function SidebarContent({
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <span className="text-base leading-none shrink-0">{scenario.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <p className={cn("font-medium truncate leading-tight", active ? "text-background" : "text-foreground")}>
-                  {scenario.name}
-                </p>
-                <p className={cn("text-[11px] truncate mt-0.5", active ? "text-background/70" : "text-muted-foreground")}>
-                  {scenario.personaName}
-                </p>
-              </div>
-              <span
-                className={cn(
-                  "w-1.5 h-1.5 rounded-full shrink-0",
-                  active ? "bg-background/60" : difficultyDot[scenario.difficulty]
-                )}
-                title={scenario.difficulty}
-              />
+              {content}
             </Link>
           );
         })}
