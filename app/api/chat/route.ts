@@ -4,6 +4,8 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import { getScenario } from "@/lib/scenarios";
 import { Message } from "@/types";
+import { auth } from "@/lib/auth";
+import { saveSession } from "@/lib/user-stats";
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -48,7 +50,27 @@ export async function POST(req: NextRequest) {
       messages,
     });
 
-    return NextResponse.json(result.output);
+    const output = result.output;
+
+    // ── Persist completed session ─────────────────────────────────────────────
+    if (output.conversationEnded && output.scores && output.overallScore !== null) {
+      const session = await auth.api.getSession({ headers: req.headers });
+      if (session?.user?.id) {
+        // Count only user messages
+        const messageCount = messages.filter((m) => m.role === "user").length;
+        const { xpEarned, newAchievements } = await saveSession({
+          userId: session.user.id,
+          scenarioId,
+          scores: output.scores,
+          overallScore: output.overallScore,
+          triggerActivated: output.triggerActivated,
+          messageCount,
+        });
+        return NextResponse.json({ ...output, xpEarned, newAchievements });
+      }
+    }
+
+    return NextResponse.json(output);
   } catch (err) {
     console.error("[/api/chat] Error:", err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

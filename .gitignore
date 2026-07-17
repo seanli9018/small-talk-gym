@@ -1,3 +1,7 @@
 node_modules
 .next
 .env.local
+
+# Drizzle DB migrations & schema snapshots
+db/migrations/*.sql
+db/migrations/meta/

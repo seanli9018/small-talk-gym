@@ -6,16 +6,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  user: {
-    additionalFields: {
-      // Track how many sessions/conversations the user has completed
-      sessionsCompleted: {
-        type: "number",
-        defaultValue: 0,
-        required: false,
-      },
-    },
-  },
 });
 
 export type Session = typeof auth.$Infer.Session;
