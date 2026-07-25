@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createGroq } from "@ai-sdk/groq";
-import { generateText, Output } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { getScenario } from "@/lib/scenarios";
 import { Message } from "@/types";
@@ -44,13 +44,21 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await generateText({
-      model: groq("meta-llama/llama-4-scout-17b-16e-instruct"),
-      output: Output.object({ schema: ChatResponseSchema }),
-      instructions: scenario.systemPrompt,
+      model: groq("llama-3.3-70b-versatile"),
       messages,
+      system: scenario.systemPrompt,
+      providerOptions: {
+        groq: { response_format: { type: "json_object" } },
+      },
     });
 
-    const output = result.output;
+    const raw = JSON.parse(result.text);
+    const parsed = ChatResponseSchema.safeParse(raw);
+    if (!parsed.success) {
+      console.error("[/api/chat] Schema validation failed:", parsed.error);
+      return NextResponse.json({ error: "Invalid response from AI" }, { status: 500 });
+    }
+    const output = parsed.data;
 
     // ── Persist completed session ─────────────────────────────────────────────
     if (output.conversationEnded && output.scores && output.overallScore !== null) {
