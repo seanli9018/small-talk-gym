@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Dumbbell, Sun, Moon, Mail, Menu, LogIn, LogOut, User } from "lucide-react";
+import { Dumbbell, Sun, Moon, Mail, Menu, LogIn, LogOut, User, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession, signOut } from "@/lib/auth-client";
 
@@ -56,6 +56,22 @@ export default function Header({
           <Mail className="h-3.5 w-3.5" />
           <span>About</span>
         </Link>
+
+        {/* Dashboard link – only shown when signed in */}
+        {mounted && session && (
+          <Link
+            href="/dashboard"
+            className={cn(
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+              pathname === "/dashboard"
+                ? "bg-muted text-foreground font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <LayoutDashboard className="h-3.5 w-3.5" />
+            <span>Dashboard</span>
+          </Link>
+        )}
 
         {/* Placeholder slots for future nav items (login, settings, etc.) */}
         {/* <SettingsButton /> */}

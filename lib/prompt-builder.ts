@@ -62,8 +62,7 @@ Also provide:
 
 const RESPONSE_FORMAT = `\
 ## Response Format
-Always respond in this EXACT JSON format with no extra text outside the JSON:
-\`\`\`json
+Always respond with ONLY a raw JSON object — no markdown fences, no extra text outside the JSON:
 {
   "reply": "your conversational response",
   "scores": {
@@ -82,8 +81,7 @@ Always respond in this EXACT JSON format with no extra text outside the JSON:
   "bonusMessage": "<bonus reveal string or null>",
   "conversationEnded": <true|false>,
   "finalSummary": "<2-3 sentence wrap-up or null>"
-}
-\`\`\``;
+}`;
 
 export interface ScenarioPromptParts {
   /** Persona identity, tone, and response-length guidance. */

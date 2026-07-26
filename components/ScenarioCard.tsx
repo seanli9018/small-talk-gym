@@ -1,6 +1,7 @@
 import { Scenario } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CheckCircle2 } from "lucide-react";
 
 const difficultyVariant: Record<string, "default" | "secondary" | "destructive"> = {
   beginner: "secondary",
@@ -8,9 +9,22 @@ const difficultyVariant: Record<string, "default" | "secondary" | "destructive">
   advanced: "destructive",
 };
 
-export default function ScenarioCard({ scenario }: { scenario: Scenario }) {
+export default function ScenarioCard({
+  scenario,
+  completed = false,
+}: {
+  scenario: Scenario;
+  completed?: boolean;
+}) {
   return (
-    <Card className="group hover:shadow-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border border-border">
+    <Card className="group hover:shadow-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border border-border relative">
+      {/* Completed overlay badge */}
+      {completed && (
+        <div className="absolute top-3 right-3 flex items-center gap-1 text-green-600 z-10">
+          <CheckCircle2 className="h-4 w-4" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider">Done</span>
+        </div>
+      )}
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="text-3xl">{scenario.emoji}</div>

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { scenarios } from "@/lib/scenarios";
 import { cn } from "@/lib/utils";
-import { X, Lock } from "lucide-react";
+import { X, Lock, LayoutDashboard } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 
 const difficultyDot: Record<string, string> = {
@@ -40,6 +40,25 @@ function SidebarContent({
           >
             <X className="h-4 w-4" />
           </button>
+        </div>
+      )}
+
+      {/* Dashboard link (signed-in only) */}
+      {mounted && isSignedIn && (
+        <div className="px-2 pt-3 pb-1">
+          <Link
+            href="/dashboard"
+            onClick={onNavClick}
+            className={cn(
+              "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors w-full",
+              pathname === "/dashboard"
+                ? "bg-foreground text-background"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <LayoutDashboard className="h-4 w-4 shrink-0" />
+            <span className="font-medium">My Dashboard</span>
+          </Link>
         </div>
       )}
 

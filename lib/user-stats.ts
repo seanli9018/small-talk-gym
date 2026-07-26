@@ -4,7 +4,7 @@
  */
 import { eq, desc, avg, max, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { userStats, practiceSessions, userAchievements } from "@/db/schema";
+import { userStats, practiceSessions, userAchievements, authUser } from "@/db/schema";
 import { ScoreBreakdown, UserLevel, UserStats, Achievement } from "@/types";
 import {
   ACHIEVEMENTS,
@@ -367,5 +367,30 @@ export async function getRecentSessions(userId: string, limit = 10) {
     ...r,
     overallScore: parseFloat(r.overallScore),
     completedAt:  r.completedAt.toISOString(),
+  }));
+}
+
+// ─── Leaderboard ──────────────────────────────────────────────────────────────
+
+export async function getLeaderboard(limit = 20) {
+  const rows = await db
+    .select({
+      userId:            userStats.userId,
+      totalXp:           userStats.totalXp,
+      sessionsCompleted: userStats.sessionsCompleted,
+      name:              authUser.name,
+    })
+    .from(userStats)
+    .leftJoin(authUser, eq(userStats.userId, authUser.id))
+    .orderBy(desc(userStats.totalXp))
+    .limit(limit);
+
+  return rows.map((r, i) => ({
+    rank:              i + 1,
+    userId:            r.userId,
+    name:              r.name ?? "Anonymous",
+    totalXp:           r.totalXp,
+    sessionsCompleted: r.sessionsCompleted,
+    levelInfo:         getLevelInfo(r.totalXp),
   }));
 }

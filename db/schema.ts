@@ -76,6 +76,14 @@ export const userAchievements = pgTable(
   ]
 );
 
+// ─── Better-auth user table (read-only reference for joins) ──────────────────
+// better-auth owns this table; we only reference it to join names for the leaderboard.
+
+export const authUser = pgTable("user", {
+  id:   text("id").primaryKey(),
+  name: text("name").notNull(),
+});
+
 // ─── Inferred row types ───────────────────────────────────────────────────────
 
 export type UserStatsRow          = typeof userStats.$inferSelect;
